@@ -1,4 +1,5 @@
 const Book = require("./model");
+const Author = require("../authors/model");
 
 const addBook = async (req, res) => {
   try {
@@ -88,6 +89,21 @@ const deleteAll = async (req, res) => {
   res.send(successResponse);
 };
 
+const getBookAndAuthor = async (req, res) => {
+  try {
+    const book = await Book.findOne({
+      where: { title: req.params.titleTwo },
+    });
+
+    const author = await book.getAuthor();
+    book.dataValues.author = author.dataValues;
+
+    res.status(200).json({ message: "success", book });
+  } catch (error) {
+    res.status(500).json({ message: error.message, error });
+  }
+};
+
 module.exports = {
   addBook,
   findAllBooks,
@@ -95,4 +111,5 @@ module.exports = {
   updateBookDynamic,
   deleteByTitle,
   deleteAll,
+  getBookAndAuthor,
 };
