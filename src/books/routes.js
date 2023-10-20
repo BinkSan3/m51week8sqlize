@@ -10,12 +10,15 @@ const {
   deleteByTitle,
   deleteAll,
   getBookAndAuthor,
+  updateMultiple,
 } = require("./controllers");
 
 bookRouter.post("/", addBook);
 bookRouter.get("/titleTwo/:titleTwo", getBookAndAuthor);
 
 bookRouter.get("/", findAllBooks);
+
+bookRouter.put("/update", updateMultiple);
 
 // bookRouter.get("/:author", findBookByAuthor);
 
