@@ -1,5 +1,7 @@
 const Book = require("./model");
 const Author = require("../authors/model");
+const Genre = require("../genres/model");
+const { Sequelize } = require("sequelize");
 
 const addBook = async (req, res) => {
   try {
@@ -98,7 +100,40 @@ const getBookAndAuthor = async (req, res) => {
     const author = await book.getAuthor();
     book.dataValues.author = author.dataValues;
 
+    const genre = await book.getGenre();
+    book.dataValues.genre = genre.dataValues;
+
     res.status(200).json({ message: "success", book });
+  } catch (error) {
+    res.status(500).json({ message: error.message, error });
+  }
+};
+
+const updateMultiple = async (req, res) => {
+  try {
+    const booksToUpdate = await Book.findAll();
+    console.log(booksToUpdate);
+    for (const book of booksToUpdate) {
+      const genreRecord = await Genre.findOne({
+        where: {
+          genre: book.genre,
+        },
+      });
+
+      if (genreRecord) {
+        const updated = await Book.update(
+          { GenreId: genreRecord.id },
+          {
+            where: { title: book.title },
+          }
+        );
+      }
+    }
+
+    const checkBooks = await Book.findAll();
+    console.log(`Updated ${booksToUpdate.length} records.`);
+
+    res.status(200).json({ message: "success", checkBooks });
   } catch (error) {
     res.status(500).json({ message: error.message, error });
   }
@@ -112,4 +147,5 @@ module.exports = {
   deleteByTitle,
   deleteAll,
   getBookAndAuthor,
+  updateMultiple,
 };

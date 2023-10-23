@@ -1,5 +1,6 @@
 const Author = require("./model");
 const Book = require("../books/model");
+const Genre = require("../genres/model");
 
 const addAuthor = async (req, res) => {
   const newAuthor = await Author.create({
@@ -47,9 +48,25 @@ const getAuthorAndBooks = async (req, res) => {
       where: { authorName: req.params.authorNameTwo },
       include: Book,
     });
+    console.log(author.Books);
+    const genresArray = author.Books;
+    for (let i = 0; i < genresArray.length; i++) {
+      // console.log(genresArray[i]);
+      // genresArray[i].dataValues.genre = (
+      //   await Genre.findOne({
+      //     where: { id: genresArray[i].dataValues.GenreId },
+      //   })
+      // ).genre;
+      const genre = await Genre.findOne({
+        where: { id: genresArray[i].dataValues.GenreId },
+      });
+      // genresArray[i].dataValues.newGenre = genre.dataValues.genre;
+      // console.log(genre);
+    }
 
     res.status(200).json({ message: "success", author });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message, error });
   }
 };
